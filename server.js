@@ -1,12 +1,12 @@
 /**
  * server.js
- * Simple Express server, testable (exports app) and ready for production env vars.
+ * Simple Express server, testable (exports app) and ready for cloud deployment.
  */
 
 const express = require('express');
 const app = express();
 
-// Built-in middleware to parse JSON request bodies
+// Middleware to parse JSON request bodies
 app.use(express.json());
 
 // Basic health route
@@ -26,17 +26,19 @@ app.use((req, res) => {
 
 // Generic error handler
 app.use((err, req, res, next) => {
-  console.error(err); // log on server
+  console.error(err); // log error
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
-// Only start server when file is run directly (keeps it testable)
+// Start server only when run directly
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
+
+  // Bind to all network interfaces (0.0.0.0) for cloud access
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server listening on port ${PORT}`);
   });
 }
 
-// Export app for testing (e.g., with supertest/jest)
+// Export app for testing
 module.exports = app;
