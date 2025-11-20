@@ -3,14 +3,14 @@ name: Build and Deploy Node.js App to Azure
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the code
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -24,13 +24,23 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Run tests
+      # 4. Run tests (optional)
       - name: Run tests
-        run: npm test
+        run: |
+          if [ -f package.json ] && grep -q "\"test\":" package.json; then
+            npm test
+          else
+            echo "No tests found, skipping..."
+          fi
 
-      # 5. Build project (optional if you have build steps)
-      - name: Build
-        run: echo "Add build commands if needed"
+      # 5. Build project (use actual build command if needed)
+      - name: Build project
+        run: |
+          if [ -f package.json ] && grep -q "\"build\":" package.json; then
+            npm run build
+          else
+            echo "No build step, skipping..."
+          fi
 
       # 6. Deploy to Azure Web App
       - name: Deploy to Azure Web App
